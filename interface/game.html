@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="BitGuess — A retro pixel number guessing game with difficulty levels, scoring, and hints." />
+  <title>BitGuess — Number Guessing Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='game.css') }}" />
+</head>
+
+<body>
+
+  <!-- Animated Pixel Background Canvas -->
+  <canvas id="bg-canvas"></canvas>
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+  <!-- Theme Ripple (animated) -->
+  <div id="theme-ripple"></div>
+
+  <!-- ══════════════════════════════════
+       PAGE 1 — HOME
+       ══════════════════════════════════ -->
+  <div class="page" id="page-home">
+    <button class="retro-btn theme-toggle" id="theme-toggle-home" aria-label="Toggle Theme">🌙</button>
+
+    <div class="game-container">
+      <img src="{{ url_for('static', filename='materials/logo.png') }}" alt="BitGuess Logo" class="app-logo" id="home-logo" />
+
+      <h1 id="home-title">NUMBER GUESSER</h1>
+      <p class="subtitle">Choose your difficulty</p>
+
+      <div class="difficulty-bar" id="home-difficulty-bar">
+        <button class="retro-btn diff-btn" data-diff="easy" id="home-btn-easy">EASY</button>
+        <button class="retro-btn diff-btn active" data-diff="medium" id="home-btn-medium">MEDIUM</button>
+        <button class="retro-btn diff-btn" data-diff="hard" id="home-btn-hard">HARD</button>
+      </div>
+
+      <div class="diff-description" id="diff-description">
+        <span id="diff-label">Medium (1–100) · 8 tries · 2 hints</span>
+      </div>
+
+      <button class="retro-btn btn-start" id="start-btn">▶ START GAME</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       PAGE 2 — GAME
+       ══════════════════════════════════ -->
+  <div class="page" id="page-game" style="display:none;">
+    <button class="retro-btn theme-toggle" id="theme-toggle-game" aria-label="Toggle Theme">🌙</button>
+
+    <div class="game-container" id="game-container">
+      <div class="game-header">
+        <img src="{{ url_for('static', filename='materials/logo.png') }}" alt="BitGuess" class="app-logo-small" />
+        <h1 id="game-title">NUMBER GUESSER</h1>
+      </div>
+      <p class="subtitle" id="game-subtitle">Guess between 1-100!</p>
+
+      <!-- Stats Row -->
+      <div class="stats-row" id="stats-row">
+        <div class="stat-item">
+          <span class="stat-value" id="stat-attempts">0</span>
+          <span class="stat-label">TRIES</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="stat-remaining">8</span>
+          <span class="stat-label">HP</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="stat-hints">2</span>
+          <span class="stat-label">MP</span>
+        </div>
+      </div>
+
+      <!-- Message Box -->
+      <div class="message-box" id="message-box">
+        <span class="message-text" id="message-text">Guess between 1-100!</span>
+      </div>
+
+      <!-- Input Group -->
+      <div class="input-group">
+        <input type="number" class="guess-input" id="guess-input"
+          placeholder="1-100" min="1" max="100" autocomplete="off" />
+        <button class="retro-btn btn-primary" id="guess-btn">GUESS</button>
+      </div>
+
+      <!-- Action Row -->
+      <div class="action-row">
+        <button class="retro-btn btn-hint" id="hint-btn">HINT(2)</button>
+        <button class="retro-btn btn-reset" id="reset-btn">RESET</button>
+      </div>
+
+      <!-- History -->
+      <div class="history-section" id="history-section" style="display:none;">
+        <div class="history-label">LOGS</div>
+        <div class="history-track" id="history-track"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       PAGE 3 — RESULT (Win / Lose)
+       ══════════════════════════════════ -->
+  <div class="page" id="page-result" style="display:none;">
+    <button class="retro-btn theme-toggle" id="theme-toggle-result" aria-label="Toggle Theme">🌙</button>
+
+    <div class="game-container result-container" id="result-container">
+      <img src="{{ url_for('static', filename='materials/logo.png') }}" alt="BitGuess" class="app-logo" />
+
+      <div class="result-status" id="result-status">🎉 YOU WIN!</div>
+      <div class="result-number" id="result-number">The number was <span id="result-num-val">?</span></div>
+
+      <div class="result-score-box" id="result-score-box">
+        <div class="score-value" id="result-score">SCORE: 0</div>
+        <div class="score-detail" id="result-detail"></div>
+      </div>
+
+      <div class="result-stats" id="result-stats">
+        <div class="stat-item">
+          <span class="stat-value" id="result-tries">0</span>
+          <span class="stat-label">TRIES</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="result-time">0.0S</span>
+          <span class="stat-label">TIME</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="result-best">0</span>
+          <span class="stat-label">BEST</span>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <button class="retro-btn btn-play-again" id="play-again-btn">▶ PLAY AGAIN</button>
+        <button class="retro-btn btn-home" id="home-btn">🏠 HOME</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hint Toast -->
+  <div class="hint-toast" id="hint-toast"></div>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
